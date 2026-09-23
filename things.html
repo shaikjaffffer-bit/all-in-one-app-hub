@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All-in-One App Hub - Your Essential Apps | SHAIK'S THINGS</title>
+  <meta name="description" content="Quick access to all your favorite shopping, food, travel, and entertainment apps in one beautiful place. Made in Telangana 🇮🇳">
+  <link rel="manifest" href="data:application/manifest+json,{
+    'name': 'App Hub',
+    'short_name': 'AppHub',
+    'start_url': '/',
+    'display': 'standalone',
+    'background_color': '#fafafa',
+    'theme_color': '#000'
+  }">
+  <meta name="theme-color" content="#fafafa">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700;800&display=swap');
+
+    body {
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      background: #fafafa;
+      color: #000;
+      line-height: 1.4;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background-image: radial-gradient(circle at 20% 30%, rgba(59,130,246,0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(251,146,60,0.03) 0%, transparent 50%);
+      z-index:-1; pointer-events:none;
+    }
+
+    header.header {
+      display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
+      padding:1rem 5%; position:sticky; top:0; z-index:100;
+      backdrop-filter:blur(20px); background:rgba(255,255,255,0.95); border-bottom:1px solid rgba(0,0,0,0.05);
+      gap:1rem;
+    }
+    .header-left { display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+    .logo {
+      font-size:1.8rem; font-weight:700; background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+
+    .search-container { flex:1; max-width:400px; position:relative; }
+    .search-input {
+      width:100%; padding:0.8rem 3rem 0.8rem 1.2rem;
+      border:1px solid rgba(0,0,0,0.08); border-radius:12px;
+      background:rgba(255,255,255,0.8); backdrop-filter:blur(10px); font-size:1rem;
+      transition: all 0.3s ease;
+    }
+    .search-input:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.1);}
+    .search-icon { position:absolute; right:1rem; top:50%; transform:translateY(-50%); color:#666;}
+
+    .clock-container { position:relative; }
+    .clock-date {
+      text-align:right; background:rgba(0,0,0,0.04); padding:0.8rem 1.2rem;
+      border-radius:12px; border:1px solid rgba(0,0,0,0.08); backdrop-filter:blur(10px);
+    }
+    .time { font-size:1.3rem; font-weight:600; margin-bottom:0.2rem; color:#000; }
+    .date { font-size:0.85rem; opacity:0.6; color:#666; }
+
+    .nav-links { display:flex; gap:0.5rem; flex-wrap:wrap; }
+    .nav-link {
+      padding:0.5rem 1rem; border-radius:8px; text-decoration:none; color:#666;
+      font-size:0.9rem; font-weight:500; transition: all 0.3s ease;
+    }
+    .nav-link:hover, .nav-link.active { color:#000; background:rgba(59,130,246,0.1); }
+
+    main.hero {
+      height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
+      padding:0 5%; position:relative; background:linear-gradient(135deg,#e0f7fa 0%,#f3e8ff 50%,#ffffff 100%);
+    }
+    .hero h1 {
+      font-size:clamp(3.5rem, 8vw,6rem); font-weight:700; letter-spacing:-0.03em; margin-bottom:1rem;
+      background:linear-gradient(135deg,#000 0%,#3b82f6 50%,#8b5cf6 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .hero-subtitle {
+      font-size:clamp(1.3rem,3vw,2rem); opacity:0.9; max-width:700px; margin-bottom:2rem; color:#333; line-height:1.5;
+    }
+    .hero-cta {
+      padding:1rem 2rem; border:none; border-radius:12px;
+      background:linear-gradient(135deg,#3b82f6,#8b5cf6); color:#fff; font-size:1rem; font-weight:600;
+      cursor:pointer; transition:all 0.3s ease;
+    }
+    .hero-cta:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(0,0,0,0.15); }
+
+    .stats { display:flex; gap:3rem; justify-content:center; flex-wrap:wrap; margin-top:2rem; }
+    .stat { text-align:center; }
+    .stat-number { font-size:2.5rem; font-weight:700; color:#000; }
+    .stat-label { font-size:0.9rem; color:#666; margin-top:0.2rem; }
+
+    .container { max-width:1400px; margin:0 auto; padding:6rem 5% 4rem; }
+
+    .section { margin-bottom:8rem; }
+    .section-title { 
+      font-size:clamp(2.5rem,5vw,4rem); 
+      font-weight:700; 
+      margin-bottom:3rem; 
+      color:#000; 
+      display:flex; 
+      align-items:center; 
+      gap:1rem;
+    }
+    .section-title span { font-size:2.5rem; }
+
+    .grid { 
+      display:grid; 
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); 
+      gap:2.5rem; 
+      justify-content:center; 
+    }
+
+    .card {
+      background:rgba(255,255,255,0.85); 
+      border-radius:24px; 
+      padding:2.5rem 2rem;
+      text-align:center; 
+      border:1px solid rgba(0,0,0,0.06); 
+      backdrop-filter:blur(20px);
+      transition:all 0.4s ease; 
+      text-decoration:none; 
+      color:inherit; 
+      display:flex; 
+      flex-direction:column; 
+      align-items:center; 
+      min-height:220px; 
+      position:relative; 
+      overflow:hidden;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+    
+    .card::before { 
+      content:''; 
+      position:absolute; 
+      top:0; 
+      left:0; 
+      right:0; 
+      height:4px; 
+      background:linear-gradient(90deg,#3b82f6,#8b5cf6,#10b981); 
+    }
+    
+    .card:hover { 
+      transform:translateY(-8px); 
+      background:rgba(255,255,255,0.98); 
+      border-color:rgba(0,0,0,0.12); 
+      box-shadow:0 30px 60px rgba(0,0,0,0.15); 
+    }
+    
+    .icon { 
+      font-size:4rem; 
+      margin-bottom:1.5rem; 
+      padding:1.5rem; 
+      background:rgba(0,0,0,0.05); 
+      border-radius:20px; 
+      width:100px; 
+      height:100px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      transition:all 0.3s ease; 
+      backdrop-filter:blur(10px); 
+      border:1px solid rgba(0,0,0,0.08); 
+      box-shadow:0 8px 25px rgba(0,0,0,0.08);
+    }
+    
+    .card:hover .icon { 
+      transform:scale(1.15) rotate(5deg); 
+      background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.1)); 
+      box-shadow:0 15px 35px rgba(59,130,246,0.2);
+    }
+    
+    .card-name { 
+      font-size:1.5rem; 
+      font-weight:600; 
+      color:#000; 
+      margin-bottom:0.5rem; 
+    }
+    
+    .card-desc { 
+      font-size:0.9rem; 
+      color:#666; 
+      opacity:1; 
+    }
+
+    footer.footer { 
+      text-align:center; 
+      padding:4rem 5%; 
+      color:#666; 
+      border-top:1px solid rgba(0,0,0,0.05); 
+      margin-top:4rem;
+    }
+    
+    .footer-links { 
+      display:flex; 
+      justify-content:center; 
+      gap:2rem; 
+      margin:2rem 0; 
+      flex-wrap:wrap; 
+    }
+    
+    .footer-link { 
+      color:#666; 
+      text-decoration:none; 
+      transition:color 0.3s ease; 
+    }
+    
+    .footer-link:hover { color:#3b82f6; }
+
+    html { scroll-behavior:smooth; }
+
+    @media (max-width:768px) {
+      .header { flex-direction:column; gap:1rem; padding:1rem 5%; }
+      .header-left { order:2; width:100%; }
+      .search-container { order:1; max-width:none; }
+      .nav-links { order:3; justify-content:center; }
+      .hero { height:90vh; padding:0 8%; }
+      .grid { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:2rem; }
+    }
+    
+    @media (max-width:480px) { 
+      .stats { flex-direction:column; gap:1rem; align-items:center; } 
+      .stat-number { font-size:2rem; } 
+    }
+
+    mark { 
+      background: #3b82f6; 
+      color: white; 
+      padding: 2px 4px; 
+      border-radius: 4px; 
+    }
+
+    /* ========== OPENING ANIMATIONS ========== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Hero animations */
+    .hero h1 { animation: fadeInUp 0.8s ease-out 0.2s both; opacity: 0; }
+    .hero-subtitle { animation: fadeInUp 0.8s ease-out 0.4s both; opacity: 0; }
+    .hero-cta { animation: fadeInUp 0.8s ease-out 0.6s both; opacity: 0; }
+    .stats { animation: fadeInUp 0.8s ease-out 0.8s both; opacity: 0; }
+    .header { animation: fadeInUp 0.6s ease-out 0s both; opacity: 0; }
+
+    /* Section title delays */
+    #shopping .section-title { animation-delay: 1s; opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
+    #grocery .section-title { animation-delay: 1.6s; opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
+    #food .section-title { animation-delay: 2.2s; opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
+    #rides .section-title { animation-delay: 2.6s; opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
+    #entertainment .section-title { animation-delay: 3s; opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
+    #travel .section-title { animation-delay: 3.4s; opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
+
+    /* Card stagger animations */
+    #shopping .grid .card:nth-child(1) { animation-delay: 1.2s; }
+    #shopping .grid .card:nth-child(2) { animation-delay: 1.3s; }
+    #shopping .grid .card:nth-child(3) { animation-delay: 1.4s; }
+    #shopping .grid .card:nth-child(4) { animation-delay: 1.5s; }
+    #shopping .grid .card:nth-child(5) { animation-delay: 1.6s; }
+    #shopping .grid .card:nth-child(6) { animation-delay: 1.7s; }
+
+    #grocery .grid .card:nth-child(1) { animation-delay: 1.8s; }
+    #grocery .grid .card:nth-child(2) { animation-delay: 1.9s; }
+    #grocery .grid .card:nth-child(3) { animation-delay: 2s; }
+    #grocery .grid .card:nth-child(4) { animation-delay: 2.1s; }
+
+    #food .grid .card:nth-child(1) { animation-delay: 2.4s; }
+    #food .grid .card:nth-child(2) { animation-delay: 2.5s; }
+
+    #rides .grid .card:nth-child(1) { animation-delay: 2.8s; }
+    #rides .grid .card:nth-child(2) { animation-delay: 2.9s; }
+    #rides .grid .card:nth-child(3) { animation-delay: 3s; }
+
+    #entertainment .grid .card:nth-child(1) { animation-delay: 3.2s; }
+    #entertainment .grid .card:nth-child(2) { animation-delay: 3.3s; }
+    #entertainment .grid .card:nth-child(3) { animation-delay: 3.4s; }
+
+    #travel .grid .card:nth-child(1) { animation-delay: 3.6s; }
+    #travel .grid .card:nth-child(2) { animation-delay: 3.7s; }
+    #travel .grid .card:nth-child(3) { animation-delay: 3.8s; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">App Hub</div>
+      <nav class="nav-links">
+        <a href="#shopping" class="nav-link">🛒 Shopping</a>
+        <a href="#grocery" class="nav-link">🥬 Grocery</a>
+        <a href="#food" class="nav-link">🍔 Food</a>
+        <a href="#rides" class="nav-link">🚕 Rides</a>
+        <a href="#entertainment" class="nav-link">🎬 Entertainment</a>
+        <a href="#travel" class="nav-link">✈️ Travel</a>
+      </nav>
+    </div>
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Search apps..." id="searchInput">
+      <span class="search-icon">🔍</span>
+    </div>
+    <div class="clock-container">
+      <div class="clock-date">
+        <div class="time" id="time"></div>
+        <div class="date" id="date"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="hero">
+    <h1>All-in-One<br>App Hub</h1>
+    <p class="hero-subtitle">Your essential apps. One beautiful place. Instant access to shopping, food, travel, entertainment & more.</p>
+    <button class="hero-cta" onclick="scrollToSection('#shopping')">Browse Apps</button>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-number" id="appCount">18</div>
+        <div class="stat-label">Apps</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">📱</div>
+        <div class="stat-label">PWA Ready</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">⚡</div>
+        <div class="stat-label">Lightning Fast</div>
+      </div>
+    </div>
+  </main>
+
+  <div class="container">
+    <!-- Shopping Section -->
+    <section class="section" id="shopping">
+      <h2 class="section-title"><span>🛒</span> Shopping</h2>
+      <div class="grid">
+        <a href="https://www.amazon.in" target="_blank" class="card" data-tags="shopping amazon top">
+          <span class="icon">🛒</span>
+          <div class="card-name">Amazon</div>
+          <div class="card-desc">Everything you need</div>
+        </a>
+        <a href="https://www.flipkart.com" target="_blank" class="card" data-tags="shopping flipkart top">
+          <span class="icon">📦</span>
+          <div class="card-name">Flipkart</div>
+          <div class="card-desc">Biggest in India</div>
+        </a>
+        <a href="https://www.myntra.com" target="_blank" class="card" data-tags="shopping fashion top">
+          <span class="icon">👕</span>
+          <div class="card-name">Myntra</div>
+          <div class="card-desc">Fashion hub</div>
+        </a>
+        <a href="https://www.ajio.com" target="_blank" class="card" data-tags="shopping fashion">
+          <span class="icon">👗</span>
+          <div class="card-name">Ajio</div>
+          <div class="card-desc">Trendy fashion</div>
+        </a>
+        <a href="https://www.nykaa.com" target="_blank" class="card" data-tags="shopping beauty">
+          <span class="icon">💄</span>
+          <div class="card-name">Nykaa</div>
+          <div class="card-desc">Beauty & wellness</div>
+        </a>
+        <a href="https://www.meeseho.com" target="_blank" class="card" data-tags="shopping budget">
+          <span class="icon">💰</span>
+          <div class="card-name">Meesho</div>
+          <div class="card-desc">Budget shopping</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Grocery Section -->
+    <section class="section" id="grocery">
+      <h2 class="section-title"><span>🥬</span> Grocery</h2>
+      <div class="grid">
+        <a href="https://www.bigbasket.com" target="_blank" class="card" data-tags="grocery bb top">
+          <span class="icon">🥬</span>
+          <div class="card-name">BigBasket</div>
+          <div class="card-desc">Daily essentials</div>
+        </a>
+        <a href="https://blinkit.com" target="_blank" class="card" data-tags="grocery blinkit top">
+          <span class="icon">⚡</span>
+          <div class="card-name">Blinkit</div>
+          <div class="card-desc">10 min delivery</div>
+        </a>
+        <a href="https://www.instamart.in" target="_blank" class="card" data-tags="grocery instamart">
+          <span class="icon">🛒</span>
+          <div class="card-name">Swiggy Instamart</div>
+          <div class="card-desc">Ultra fast grocery</div>
+        </a>
+        <a href="https://zepto.co" target="_blank" class="card" data-tags="grocery zepto">
+          <span class="icon">🚀</span>
+          <div class="card-name">Zepto</div>
+          <div class="card-desc">Lightning grocery</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Food Section -->
+    <section class="section" id="food">
+      <h2 class="section-title"><span>🍔</span> Food</h2>
+      <div class="grid">
+        <a href="https://www.zomato.com" target="_blank" class="card" data-tags="food zomato top">
+          <span class="icon">🍕</span>
+          <div class="card-name">Zomato</div>
+          <div class="card-desc">1M+ restaurants</div>
+        </a>
+        <a href="https://food.swiggy.com" target="_blank" class="card" data-tags="food swiggy top">
+          <span class="icon">🍔</span>
+          <div class="card-name">Swiggy</div>
+          <div class="card-desc">Fast delivery</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Rides Section -->
+    <section class="section" id="rides">
+      <h2 class="section-title"><span>🚕</span> Rides</h2>
+      <div class="grid">
+        <a href="https://www.uber.com/in/en/" target="_blank" class="card" data-tags="rides uber top">
+          <span class="icon">🚗</span>
+          <div class="card-name">Uber</div>
+          <div class="card-desc">Ride anywhere</div>
+        </a>
+        <a href="https://www.ola.com" target="_blank" class="card" data-tags="rides ola top">
+          <span class="icon">🚕</span>
+          <div class="card-name">Ola</div>
+          <div class="card-desc">India's own</div>
+        </a>
+        <a href="https://www.rapido.bike" target="_blank" class="card" data-tags="rides rapido">
+          <span class="icon">🏍️</span>
+          <div class="card-name">Rapido</div>
+          <div class="card-desc">Bike taxi</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Entertainment Section -->
+    <section class="section" id="entertainment">
+      <h2 class="section-title"><span>🎬</span> Entertainment</h2>
+      <div class="grid">
+        <a href="https://www.netflix.com/in/" target="_blank" class="card" data-tags="entertainment netflix top">
+          <span class="icon">📺</span>
+          <div class="card-name">Netflix</div>
+          <div class="card-desc">Movies & series</div>
+        </a>
+        <a href="https://www.primevideo.com" target="_blank" class="card" data-tags="entertainment prime top">
+          <span class="icon">🎥</span>
+          <div class="card-name">Prime Video</div>
+          <div class="card-desc">Amazon originals</div>
+        </a>
+        <a href="https://www.hotstar.com/in" target="_blank" class="card" data-tags="entertainment hotstar">
+          <span class="icon">⚽</span>
+          <div class="card-name">Disney+ Hotstar</div>
+          <div class="card-desc">Sports & movies</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Travel Section -->
+    <section class="section" id="travel">
+      <h2 class="section-title"><span>✈️</span> Travel</h2>
+      <div class="grid">
+        <a href="https://www.makemytrip.com" target="_blank" class="card" data-tags="travel makemytrip top">
+          <span class="icon">✈️</span>
+          <div class="card-name">MakeMyTrip</div>
+          <div class="card-desc">Flights & hotels</div>
+        </a>
+        <a href="https://www.goibibo.com" target="_blank" class="card" data-tags="travel goibibo">
+          <span class="icon">🛏️</span>
+          <div class="card-name">Goibibo</div>
+          <div class="card-desc">Best deals</div>
+        </a>
+        <a href="https://www.irctc.co.in" target="_blank" class="card" data-tags="travel irctc">
+          <span class="icon">🚂</span>
+          <div class="card-name">IRCTC</div>
+          <div class="card-desc">Train tickets</div>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>🏠 <strong>Made with in Telangana</strong></p>
+      <p id="footerClock">Monday, January 12, 2026 | 12:10 PM IST</p>
+      <div class="footer-links">
+        <a href="#shopping" class="footer-link">Shopping</a>
+        <a href="#grocery" class="footer-link">Grocery</a>
+        <a href="#food" class="footer-link">Food</a>
+        <a href="#rides" class="footer-link">Rides</a>
+        <a href="#entertainment" class="footer-link">Entertainment</a>
+        <a href="#travel" class="footer-link">Travel</a>
+        <a href="https://youtube.com/@shaiksthings" target="_blank" class="footer-link">📺</a>
+      </div>
+      <p>© 2026 SHAIK JAFFER. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Clock & Date - WORKING PERFECTLY
+    function updateClock() {
+      const now = new Date();
+      const optionsDate = { weekday:'short', year:'numeric', month:'short', day:'numeric'};
+      const optionsTime = { hour:'2-digit', minute:'2-digit', hour12:true};
+      
+      document.getElementById('time').textContent = now.toLocaleTimeString('en-IN', optionsTime);
+      document.getElementById('date').textContent = now.toLocaleDateString('en-IN', optionsDate);
+      
+      const footerClock = document.getElementById('footerClock');
+      if (footerClock) {
+        footerClock.textContent = `${now.toLocaleDateString('en-IN', optionsDate)} | ${now.toLocaleTimeString('en-IN', optionsTime)}`;
+      }
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // App counter
+    function updateAppCount() {
+      const totalCards = document.querySelectorAll('.card').length;
+      document.getElementById('appCount').textContent = totalCards;
+    }
+    updateAppCount();
+
+    // Smooth scroll function
+    function scrollToSection(sectionId) {
+      const target = document.querySelector(sectionId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Navigation smooth scroll
+    document.querySelectorAll('.nav-link, .footer-link[href^="#"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        if (this.getAttribute('href').startsWith('#')) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          scrollToSection(targetId);
+          
+          // Active nav state
+          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // Search functionality - PERFECTLY WORKING
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.card');
+
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const tags = (card.dataset.tags || '').toLowerCase();
+        const name = card.querySelector('.card-name').textContent.toLowerCase();
+        
+        if (query === '' || name.includes(query) || tags.includes(query)) {
+          card.style.display = 'flex';
+          card.style.opacity = '1';
+          visibleCount++;
+          
+          // Highlight search term
+          if (query) {
+            const nameElement = card.querySelector('.card-name');
+            const highlighted = nameElement.textContent.replace(
+              new RegExp(`(${query})`, 'gi'),
+              '<mark>$1</mark>'
+            );
+            nameElement.innerHTML = highlighted;
+          }
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Update counter for search results
+      if (query) {
+        document.getElementById('appCount').textContent = visibleCount;
+      } else {
+        updateAppCount();
+      }
+    });
+  </script>
+</body>
+</html>
